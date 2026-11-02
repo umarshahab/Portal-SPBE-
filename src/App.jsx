@@ -1,4 +1,6 @@
 
+import { useState } from "react";
+
 import {
   BrowserRouter,
   Routes,
@@ -15,8 +17,12 @@ import Galeri from "./pages/Galeri";
 import Informasi from "./pages/Informasi";
 import Login from "./pages/Login";
 import Evaluasi from "./pages/Evaluasi";
+import DataEvidence from "./pages/DataEvidence";
 
 function App() {
+  // Penyimpanan evidence bersama antarhalaman
+  const [evidenceData, setEvidenceData] = useState({});
+
   return (
     <BrowserRouter>
       <Routes>
@@ -70,10 +76,26 @@ function App() {
           element={<Login />}
         />
 
-        {/* Dashboard evaluasi untuk pratinjau pengembangan */}
+        {/* Dashboard evaluasi */}
         <Route
           path="/preview/evaluasi"
-          element={<Evaluasi />}
+          element={
+            <Evaluasi
+              evidenceData={evidenceData}
+              setEvidenceData={setEvidenceData}
+            />
+          }
+        />
+
+        {/* Halaman Data Evidence */}
+        <Route
+          path="/preview/data-evidence"
+          element={
+            <DataEvidence
+              evidenceData={evidenceData}
+              setEvidenceData={setEvidenceData}
+            />
+          }
         />
 
         {/* Evaluasi sebenarnya tetap diarahkan ke login */}

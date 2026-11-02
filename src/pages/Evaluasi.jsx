@@ -1,4 +1,4 @@
-
+import { useNavigate } from "react-router-dom";
 import { Fragment, useMemo, useState } from "react";
 import {
   Search,
@@ -39,15 +39,15 @@ const architectureIcons = [
   ShieldCheck,
 ];
 
-export default function Evaluasi() {
+export default function Evaluasi({ evidenceData, setEvidenceData }) {
+  const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Semua");
   const [selectedIndicator, setSelectedIndicator] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedAspects, setExpandedAspects] = useState(
     aspects.map((item) => item.id)
-  );
-  const [evidenceData, setEvidenceData] = useState({});
+  ); 
 
   const filteredIndicators = useMemo(() => {
     return indicators.filter((item) => {
@@ -62,21 +62,17 @@ export default function Evaluasi() {
         aspect?.name.toLowerCase().includes(keyword) ||
         `ind-${item.id}`.includes(keyword);
 
+      // Mengambil jumlah file evidence yang benar-benar diunggah
+      const uploadedCount = (evidenceData?.[item.id] || []).length;
+
       const matchesFilter =
         filter === "Semua" ||
-        (filter === "Terisi Evidence" && item.evidence > 0) ||
+        (filter === "Terisi Evidence" && uploadedCount > 0) ||
         item.type === filter;
 
       return matchesSearch && matchesFilter;
     });
-  }, [search, filter]);
-
-  const filledPercentage =
-    evaluationSummary.totalEvidence > 0
-      ? (evaluationSummary.filledEvidence /
-          evaluationSummary.totalEvidence) *
-        100
-      : 0;
+  }, [search, filter, evidenceData]);
 
   function toggleAspect(id) {
     setExpandedAspects((current) =>
@@ -93,6 +89,31 @@ export default function Evaluasi() {
 
     setSidebarOpen(false);
   }
+
+  // Menghitung jumlah seluruh file evidence yang diunggah
+  const uploadedEvidenceCount = indicators.reduce(
+    (total, indicator) => {
+      return total + (evidenceData?.[indicator.id] || []).length;
+    },
+    0
+  );
+
+  // Menghitung jumlah indikator yang sudah memiliki evidence
+  const filledIndicatorCount = indicators.filter(
+    (indicator) => (evidenceData?.[indicator.id] || []).length > 0
+  ).length;
+
+  // Jumlah seluruh indikator
+  const totalIndicatorCount = indicators.length;
+
+  // Persentase kelengkapan evidence
+const evidenceCompletion =
+  evaluationSummary.totalEvidence > 0
+    ? (uploadedEvidenceCount / evaluationSummary.totalEvidence) * 100
+    : 0;
+
+  // Persentase untuk progress bar
+  const filledPercentage = Math.min(evidenceCompletion, 100);
 
   return (
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
@@ -148,10 +169,7 @@ export default function Evaluasi() {
             </button>
 
             <button
-              onClick={() => {
-                setFilter("Terisi Evidence");
-                scrollToTable();
-              }}
+              onClick={() => navigate("/preview/data-evidence")}
               className="flex w-full items-center gap-3 rounded-lg px-3.5 py-3 text-[13px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
             >
               <FileText size={18} />
@@ -406,7 +424,7 @@ export default function Evaluasi() {
                 </p>
 
                 <h3 className="mt-2 text-[30px] font-bold tracking-tight text-slate-900">
-                  {evaluationSummary.filledEvidence}
+                  {uploadedEvidenceCount}
                   <span className="ml-1 text-[15px] font-medium text-slate-400">
                     / {evaluationSummary.totalEvidence}
                   </span>
@@ -420,15 +438,18 @@ export default function Evaluasi() {
               {/* INDICATORS */}
               <div className="rounded-xl border border-slate-200/80 bg-white px-5 py-5">
                 <p className="text-[12px] text-slate-500">
-                  Total Indikator
+                  Indikator Terisi
                 </p>
 
                 <h3 className="mt-2 text-[30px] font-bold tracking-tight text-slate-900">
-                  {evaluationSummary.totalIndicators}
+                  {filledIndicatorCount}
+                  <span className="ml-1 text-[15px] font-medium text-slate-400">
+                    / {totalIndicatorCount}
+                  </span>
                 </h3>
 
                 <p className="mt-1 text-[10px] text-slate-400">
-                  Dalam {aspects.length} aspek penilaian
+                  Indikator yang memiliki evidence
                 </p>
               </div>
             </div>
@@ -456,19 +477,21 @@ export default function Evaluasi() {
               <div
                 className="h-full rounded-full bg-[#3159b5] transition-all"
                 style={{
-                  width: `${Math.min(filledPercentage, 100)}%`,
+                  width: `${filledPercentage}%`,
                 }}
               />
             </div>
 
             <div className="mt-3 flex justify-between text-[10px] text-slate-400">
               <span>
-                {evaluationSummary.filledEvidence} evidence terisi
+                {uploadedEvidenceCount} evidence terisi
               </span>
 
               <span>
-                {evaluationSummary.totalEvidence -
-                  evaluationSummary.filledEvidence}{" "}
+                {Math.max(
+                  evaluationSummary.totalEvidence - uploadedEvidenceCount,
+                  0
+                )}{" "}
                 belum terisi
               </span>
             </div>
@@ -662,24 +685,31 @@ export default function Evaluasi() {
                               </td>
 
                               <td className="px-4 py-3.5">
-                                <div className="flex items-center gap-1.5">
-                                  {item.evidence > 0 ? (
-                                    <CircleCheck
-                                      size={14}
-                                      className="text-emerald-600"
-                                    />
-                                  ) : (
-                                    <Clock3
-                                      size={14}
-                                      className="text-slate-400"
-                                    />
-                                  )}
+                                {(() => {
+                                  const uploadedCount = (
+                                    evidenceData?.[item.id] || []
+                                  ).length;
 
-                                  <span className="text-[11px] font-medium tabular-nums text-slate-600">
-                                    {item.evidence}/
-                                    {item.totalEvidence}
-                                  </span>
-                                </div>
+                                  return (
+                                    <div className="flex items-center gap-1.5">
+                                      {uploadedCount > 0 ? (
+                                        <CircleCheck
+                                          size={14}
+                                          className="text-emerald-600"
+                                        />
+                                      ) : (
+                                        <Clock3
+                                          size={14}
+                                          className="text-slate-400"
+                                        />
+                                      )}
+
+                                      <span className="text-[11px] font-medium tabular-nums text-slate-600">
+                                        {uploadedCount}/{item.totalEvidence}
+                                      </span>
+                                    </div>
+                                  );
+                                })()}
                               </td>
 
                               <td className="px-4 py-3.5 text-center">
