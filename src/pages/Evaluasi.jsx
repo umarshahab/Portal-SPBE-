@@ -1,31 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { Fragment, useMemo, useState } from "react";
-import {
-  Search,
-  LayoutDashboard,
-  FileText,
-  ShieldCheck,
-  Database,
-  Settings,
-  Users,
-  ChevronDown,
-  ChevronRight,
-  LogOut,
-  Bell,
-  Menu,
-  X,
-  ClipboardList,
-  CircleCheck,
-  Clock3,
-  Eye,
-  ArrowUpRight,
-} from "lucide-react";
+import {Search,LayoutDashboard,FileText,ShieldCheck,Database,Settings,Users,ChevronDown,ChevronRight,LogOut,
+  Bell,Menu,X,ClipboardList,CircleCheck,Clock3,Eye,ArrowLeft,
+} from "lucide-react"; 
 
 import {
   evaluationSummary,
   architectures,
   aspects,
-  indicators,
+  indicators as initialIndicators,
 } from "../data/evaluationData";
 
 import EvidenceManager from "../components/EvidenceManager";
@@ -39,20 +22,59 @@ const architectureIcons = [
   ShieldCheck,
 ];
 
-export default function Evaluasi({ evidenceData, setEvidenceData }) {
+export default function Evaluasi({
+  evidenceData,
+  setEvidenceData,
+  indicatorsData = initialIndicators,
+  setIndicatorsData,
+}) {
   const navigate = useNavigate();
+
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("Semua");
   const [selectedIndicator, setSelectedIndicator] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
   const [expandedAspects, setExpandedAspects] = useState(
     aspects.map((item) => item.id)
-  ); 
+  );
 
+  // Mengubah nilai capaian indikator
+  function updateIndicatorScore(id, value) {
+    if (!setIndicatorsData) return;
+
+    if (value === "") {
+      setIndicatorsData((current) =>
+        current.map((indicator) =>
+          indicator.id === id
+            ? { ...indicator, score: "" }
+            : indicator
+        )
+      );
+
+      return;
+    }
+
+    const newScore = Math.min(
+      5,
+      Math.max(0, Number(value))
+    );
+
+    setIndicatorsData((current) =>
+      current.map((indicator) =>
+        indicator.id === id
+          ? { ...indicator, score: newScore }
+          : indicator
+      )
+    );
+  }
+
+  // Filter dan pencarian indikator
   const filteredIndicators = useMemo(() => {
-    return indicators.filter((item) => {
+    return indicatorsData.filter((item) => {
       const aspect = aspects.find(
-        (aspect) => aspect.id === item.aspectId
+        (aspect) =>
+          Number(aspect.id) === Number(item.aspectId)
       );
 
       const keyword = search.toLowerCase();
@@ -62,8 +84,9 @@ export default function Evaluasi({ evidenceData, setEvidenceData }) {
         aspect?.name.toLowerCase().includes(keyword) ||
         `ind-${item.id}`.includes(keyword);
 
-      // Mengambil jumlah file evidence yang benar-benar diunggah
-      const uploadedCount = (evidenceData?.[item.id] || []).length;
+      const uploadedCount = (
+        evidenceData?.[item.id] || []
+      ).length;
 
       const matchesFilter =
         filter === "Semua" ||
@@ -72,7 +95,12 @@ export default function Evaluasi({ evidenceData, setEvidenceData }) {
 
       return matchesSearch && matchesFilter;
     });
-  }, [search, filter, evidenceData]);
+  }, [
+    search,
+    filter,
+    evidenceData,
+    indicatorsData,
+  ]);
 
   function toggleAspect(id) {
     setExpandedAspects((current) =>
@@ -90,37 +118,48 @@ export default function Evaluasi({ evidenceData, setEvidenceData }) {
     setSidebarOpen(false);
   }
 
-  // Menghitung jumlah seluruh file evidence yang diunggah
-  const uploadedEvidenceCount = indicators.reduce(
-    (total, indicator) => {
-      return total + (evidenceData?.[indicator.id] || []).length;
-    },
+  // Total evidence yang sudah diunggah
+  const uploadedEvidenceCount = indicatorsData.reduce(
+    (total, indicator) =>
+      total + (evidenceData?.[indicator.id] || []).length,
     0
   );
 
-  // Menghitung jumlah indikator yang sudah memiliki evidence
-  const filledIndicatorCount = indicators.filter(
-    (indicator) => (evidenceData?.[indicator.id] || []).length > 0
+  // Jumlah indikator yang memiliki evidence
+  const filledIndicatorCount = indicatorsData.filter(
+    (indicator) =>
+      (evidenceData?.[indicator.id] || []).length > 0
   ).length;
 
-  // Jumlah seluruh indikator
-  const totalIndicatorCount = indicators.length;
+  const totalIndicatorCount = indicatorsData.length;
+
+  // Target evidence
+  const totalEvidenceTarget = indicatorsData.reduce(
+    (total, indicator) =>
+      total + Number(indicator.totalEvidence || 0),
+    0
+  );
 
   // Persentase kelengkapan evidence
-const evidenceCompletion =
-  evaluationSummary.totalEvidence > 0
-    ? (uploadedEvidenceCount / evaluationSummary.totalEvidence) * 100
-    : 0;
+  const evidenceCompletion =
+    totalEvidenceTarget > 0
+      ? (uploadedEvidenceCount / totalEvidenceTarget) * 100
+      : 0;
 
-  // Persentase untuk progress bar
-  const filledPercentage = Math.min(evidenceCompletion, 100);
+  const filledPercentage = Math.min(
+    evidenceCompletion,
+    100
+  );
 
   return (
     <div className="min-h-screen bg-[#f5f7fa] text-slate-800">
+
       {/* SIDEBAR */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 flex w-[260px] flex-col border-r border-slate-200/80 bg-white transition-transform duration-300 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
+          sidebarOpen
+            ? "translate-x-0"
+            : "-translate-x-full"
         } lg:translate-x-0`}
       >
         {/* BRAND */}
@@ -134,6 +173,7 @@ const evidenceCompletion =
               <h2 className="text-[15px] font-bold tracking-tight text-slate-900">
                 SPBE DUMAI
               </h2>
+
               <p className="mt-0.5 text-[10px] tracking-wide text-slate-400">
                 Evaluation System
               </p>
@@ -169,7 +209,9 @@ const evidenceCompletion =
             </button>
 
             <button
-              onClick={() => navigate("/preview/data-evidence")}
+              onClick={() =>
+                navigate("/preview/data-evidence")
+              }
               className="flex w-full items-center gap-3 rounded-lg px-3.5 py-3 text-[13px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
             >
               <FileText size={18} />
@@ -205,6 +247,7 @@ const evidenceCompletion =
               <p className="text-[13px] font-semibold text-slate-800">
                 Administrator
               </p>
+
               <p className="mt-0.5 text-[11px] text-slate-400">
                 Pengelola SPBE
               </p>
@@ -226,6 +269,7 @@ const evidenceCompletion =
 
       {/* MAIN */}
       <main className="min-h-screen lg:ml-[260px]">
+
         {/* HEADER */}
         <header className="sticky top-0 z-30 flex h-[76px] items-center justify-between border-b border-slate-200/80 bg-white/95 px-5 backdrop-blur-md md:px-8">
           <div className="flex items-center gap-3">
@@ -240,10 +284,19 @@ const evidenceCompletion =
               <h1 className="text-[15px] font-bold tracking-tight text-slate-900">
                 Dashboard Evaluasi
               </h1>
+
               <p className="mt-0.5 hidden text-[11px] text-slate-400 sm:block">
                 Sistem Evaluasi Pemerintah Digital
               </p>
             </div>
+            <button
+              type="button"
+              onClick={() => navigate("/")}
+              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
+            >
+              <ArrowLeft size={15} />
+              Kembali ke Dashboard
+            </button>
           </div>
 
           <div className="flex items-center gap-4">
@@ -261,6 +314,7 @@ const evidenceCompletion =
               <p className="text-[13px] font-semibold text-slate-800">
                 Administrator
               </p>
+
               <p className="mt-0.5 text-[11px] text-slate-400">
                 Pemerintah Kota Dumai
               </p>
@@ -270,11 +324,13 @@ const evidenceCompletion =
 
         {/* CONTENT */}
         <div className="mx-auto max-w-[1600px] space-y-8 px-5 py-7 md:px-8 md:py-9">
+
           {/* INTRO */}
           <section className="flex flex-wrap items-end justify-between gap-4">
             <div>
               <div className="mb-2 flex items-center gap-2">
                 <span className="h-1.5 w-1.5 rounded-full bg-[#244ca8]" />
+
                 <p className="text-[11px] font-bold uppercase tracking-[0.15em] text-[#244ca8]">
                   PEMDI KOTA DUMAI
                 </p>
@@ -309,7 +365,22 @@ const evidenceCompletion =
 
             <div className="grid overflow-hidden rounded-xl border border-slate-200/80 bg-white sm:grid-cols-2 xl:grid-cols-4">
               {architectures.map((item, index) => {
-                const Icon = architectureIcons[index];
+                const Icon =
+                  architectureIcons[index] || FileText;
+
+                const architectureAspects = aspects.filter(
+                  (aspect) =>
+                    aspect.architecture === item.title
+                );
+
+                const architectureIndicatorCount =
+                  indicatorsData.filter((indicator) =>
+                    architectureAspects.some(
+                      (aspect) =>
+                        Number(aspect.id) ===
+                        Number(indicator.aspectId)
+                    )
+                  ).length;
 
                 return (
                   <div
@@ -319,9 +390,7 @@ const evidenceCompletion =
                         ? "border-t border-slate-100 sm:border-l xl:border-t-0"
                         : ""
                     } ${
-                      index === 1
-                        ? "sm:border-t-0"
-                        : ""
+                      index === 1 ? "sm:border-t-0" : ""
                     }`}
                   >
                     <div className="mb-4 flex items-center justify-between">
@@ -341,8 +410,9 @@ const evidenceCompletion =
                     <div className="mt-4 flex items-center gap-6 border-t border-slate-100 pt-3.5">
                       <div>
                         <p className="text-[19px] font-bold tracking-tight text-slate-900">
-                          {item.aspects}
+                          {architectureAspects.length}
                         </p>
+
                         <p className="mt-0.5 text-[10px] text-slate-400">
                           Aspek
                         </p>
@@ -350,8 +420,9 @@ const evidenceCompletion =
 
                       <div>
                         <p className="text-[19px] font-bold tracking-tight text-slate-900">
-                          {item.indicators}
+                          {architectureIndicatorCount}
                         </p>
+
                         <p className="mt-0.5 text-[10px] text-slate-400">
                           Indikator
                         </p>
@@ -372,6 +443,7 @@ const evidenceCompletion =
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+
               {/* INDEX */}
               <div className="rounded-xl bg-[#193b91] px-5 py-5 text-white">
                 <p className="text-[12px] text-blue-100/80">
@@ -380,7 +452,7 @@ const evidenceCompletion =
 
                 <div className="mt-2 flex items-end justify-between">
                   <h3 className="text-[30px] font-bold tracking-tight">
-                    {evaluationSummary.index.toFixed(2)}
+                    {Number(evaluationSummary.index).toFixed(2)}
                   </h3>
 
                   <LayoutDashboard
@@ -401,7 +473,7 @@ const evidenceCompletion =
                 </p>
 
                 <h3 className="mt-2 text-[30px] font-bold tracking-tight text-slate-900">
-                  {evaluationSummary.percentage}%
+                  {Number(evaluationSummary.percentage).toFixed(2)}%
                 </h3>
 
                 <div className="mt-3 h-1 overflow-hidden rounded-full bg-slate-100">
@@ -409,7 +481,7 @@ const evidenceCompletion =
                     className="h-full rounded-full bg-[#3159b5]"
                     style={{
                       width: `${Math.min(
-                        evaluationSummary.percentage,
+                        Number(evaluationSummary.percentage),
                         100
                       )}%`,
                     }}
@@ -425,8 +497,9 @@ const evidenceCompletion =
 
                 <h3 className="mt-2 text-[30px] font-bold tracking-tight text-slate-900">
                   {uploadedEvidenceCount}
+
                   <span className="ml-1 text-[15px] font-medium text-slate-400">
-                    / {evaluationSummary.totalEvidence}
+                    / {totalEvidenceTarget}
                   </span>
                 </h3>
 
@@ -443,6 +516,7 @@ const evidenceCompletion =
 
                 <h3 className="mt-2 text-[30px] font-bold tracking-tight text-slate-900">
                   {filledIndicatorCount}
+
                   <span className="ml-1 text-[15px] font-medium text-slate-400">
                     / {totalIndicatorCount}
                   </span>
@@ -489,7 +563,7 @@ const evidenceCompletion =
 
               <span>
                 {Math.max(
-                  evaluationSummary.totalEvidence - uploadedEvidenceCount,
+                  totalEvidenceTarget - uploadedEvidenceCount,
                   0
                 )}{" "}
                 belum terisi
@@ -520,7 +594,7 @@ const evidenceCompletion =
                   <span className="font-bold text-slate-800">
                     {filteredIndicators.length}
                   </span>{" "}
-                  dari {indicators.length} indikator
+                  dari {indicatorsData.length} indikator
                 </span>
               </div>
 
@@ -567,21 +641,27 @@ const evidenceCompletion =
                     <th className="w-14 px-5 py-3.5 font-semibold">
                       No.
                     </th>
+
                     <th className="px-4 py-3.5 font-semibold">
                       Indikator
                     </th>
+
                     <th className="w-24 px-4 py-3.5 font-semibold">
                       Tipe
                     </th>
+
                     <th className="w-20 px-4 py-3.5 font-semibold">
                       Bobot
                     </th>
+
                     <th className="w-32 px-4 py-3.5 font-semibold">
                       Capaian
                     </th>
+
                     <th className="w-32 px-4 py-3.5 font-semibold">
                       Evidence
                     </th>
+
                     <th className="w-24 px-4 py-3.5 text-center font-semibold">
                       Detail
                     </th>
@@ -591,7 +671,8 @@ const evidenceCompletion =
                 <tbody>
                   {aspects.map((aspect) => {
                     const rows = filteredIndicators.filter(
-                      (item) => item.aspectId === aspect.id
+                      (item) =>
+                        Number(item.aspectId) === Number(aspect.id)
                     );
 
                     if (rows.length === 0) return null;
@@ -606,7 +687,9 @@ const evidenceCompletion =
                         <tr className="border-b border-slate-100 bg-[#f8faff]">
                           <td colSpan={7} className="px-5 py-3">
                             <button
-                              onClick={() => toggleAspect(aspect.id)}
+                              onClick={() =>
+                                toggleAspect(aspect.id)
+                              }
                               className="flex w-full items-center gap-3 text-left"
                             >
                               <span className="text-slate-400">
@@ -632,7 +715,7 @@ const evidenceCompletion =
                               </span>
 
                               <span className="whitespace-nowrap text-[10px] text-slate-400">
-                                Bobot {aspect.weight}%{" "}
+                                Bobot {aspect.weight}%
                                 <span className="mx-1 text-slate-300">
                                   ·
                                 </span>
@@ -644,88 +727,103 @@ const evidenceCompletion =
 
                         {/* INDICATOR ROWS */}
                         {isExpanded &&
-                          rows.map((item) => (
-                            <tr
-                              key={item.id}
-                              className="border-b border-slate-100 transition last:border-b-0 hover:bg-slate-50/70"
-                            >
-                              <td className="px-5 py-3.5 text-[11px] tabular-nums text-slate-400">
-                                {item.id}
-                              </td>
+                          rows.map((item) => {
+                            const uploadedCount = (
+                              evidenceData?.[item.id] || []
+                            ).length;
 
-                              <td className="px-4 py-3.5">
-                                <p className="max-w-[440px] text-[12px] font-medium leading-5 text-slate-700">
-                                  {item.name}
-                                </p>
-                              </td>
+                            return (
+                              <tr
+                                key={item.id}
+                                className="border-b border-slate-100 transition last:border-b-0 hover:bg-slate-50/70"
+                              >
+                                <td className="px-5 py-3.5 text-[11px] tabular-nums text-slate-400">
+                                  {item.id}
+                                </td>
 
-                              <td className="px-4 py-3.5">
-                                <span
-                                  className={`text-[10px] font-medium ${
-                                    item.type === "Internal"
-                                      ? "text-[#3159b5]"
-                                      : "text-violet-600"
-                                  }`}
-                                >
-                                  {item.type}
-                                </span>
-                              </td>
+                                <td className="px-4 py-3.5">
+                                  <p className="max-w-[440px] text-[12px] font-medium leading-5 text-slate-700">
+                                    {item.name}
+                                  </p>
+                                </td>
 
-                              <td className="px-4 py-3.5 text-[12px] font-medium tabular-nums text-slate-600">
-                                {item.weight}%
-                              </td>
+                                <td className="px-4 py-3.5">
+                                  <span
+                                    className={`text-[10px] font-medium ${
+                                      item.type === "Internal"
+                                        ? "text-[#3159b5]"
+                                        : "text-violet-600"
+                                    }`}
+                                  >
+                                    {item.type}
+                                  </span>
+                                </td>
 
-                              <td className="px-4 py-3.5">
-                                <span className="text-[12px] font-semibold tabular-nums text-slate-800">
-                                  {item.score}
-                                </span>
-                                <span className="ml-1 text-[10px] text-slate-400">
-                                  / 5.0
-                                </span>
-                              </td>
+                                <td className="px-4 py-3.5 text-[12px] font-medium tabular-nums text-slate-600">
+                                  {item.weight}%
+                                </td>
 
-                              <td className="px-4 py-3.5">
-                                {(() => {
-                                  const uploadedCount = (
-                                    evidenceData?.[item.id] || []
-                                  ).length;
+                                {/* CAPAIAN */}
+                                <td className="px-4 py-3.5">
+                                  <div className="flex items-center gap-1.5">
+                                    <input
+                                      type="number"
+                                      min="0"
+                                      max="5"
+                                      step="0.01"
+                                      value={item.score ?? 0}
+                                      onChange={(e) =>
+                                        updateIndicatorScore(
+                                          item.id,
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-16 rounded-md border border-slate-200 bg-white px-2 py-1.5 text-center text-[12px] font-semibold text-slate-800 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                                    />
 
-                                  return (
-                                    <div className="flex items-center gap-1.5">
-                                      {uploadedCount > 0 ? (
-                                        <CircleCheck
-                                          size={14}
-                                          className="text-emerald-600"
-                                        />
-                                      ) : (
-                                        <Clock3
-                                          size={14}
-                                          className="text-slate-400"
-                                        />
-                                      )}
+                                    <span className="text-[10px] text-slate-400">
+                                      / 5.0
+                                    </span>
+                                  </div>
+                                </td>
 
-                                      <span className="text-[11px] font-medium tabular-nums text-slate-600">
-                                        {uploadedCount}/{item.totalEvidence}
-                                      </span>
-                                    </div>
-                                  );
-                                })()}
-                              </td>
+                                {/* EVIDENCE */}
+                                <td className="px-4 py-3.5">
+                                  <div className="flex items-center gap-1.5">
+                                    {uploadedCount > 0 ? (
+                                      <CircleCheck
+                                        size={14}
+                                        className="text-emerald-600"
+                                      />
+                                    ) : (
+                                      <Clock3
+                                        size={14}
+                                        className="text-slate-400"
+                                      />
+                                    )}
 
-                              <td className="px-4 py-3.5 text-center">
-                                <button
-                                  onClick={() =>
-                                    setSelectedIndicator(item)
-                                  }
-                                  aria-label={`Detail indikator ${item.id}`}
-                                  className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-[10px] font-semibold text-[#3159b5] transition hover:bg-blue-50"
-                                >
-                                  <Eye size={13} />
-                                  Detail
-                                </button>
-                              </td>
-                            </tr>
-                          ))}
+                                    <span className="text-[11px] font-medium tabular-nums text-slate-600">
+                                      {uploadedCount}/{item.totalEvidence}
+                                    </span>
+                                  </div>
+                                </td>
+
+                                {/* DETAIL */}
+                                <td className="px-4 py-3.5 text-center">
+                                  <button
+                                    onClick={() =>
+                                      setSelectedIndicator(item)
+                                    }
+                                    aria-label={`Detail indikator ${item.id}`}
+                                    className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-[10px] font-semibold text-[#3159b5] transition hover:bg-blue-50"
+                                  >
+                                    <Eye size={13} />
+                                    Detail
+                                  </button>
+                                </td>
+                              </tr>
+                            );
+                          })}
                       </Fragment>
                     );
                   })}
@@ -740,9 +838,11 @@ const evidenceCompletion =
                           size={22}
                           className="mx-auto text-slate-300"
                         />
+
                         <p className="mt-3 text-[12px] font-medium text-slate-600">
                           Indikator tidak ditemukan
                         </p>
+
                         <p className="mt-1 text-[11px] text-slate-400">
                           Coba gunakan kata kunci atau filter lainnya.
                         </p>
@@ -763,7 +863,9 @@ const evidenceCompletion =
                 onClick={() => {
                   setSearch("");
                   setFilter("Semua");
-                  setExpandedAspects(aspects.map((item) => item.id));
+                  setExpandedAspects(
+                    aspects.map((item) => item.id)
+                  );
                 }}
                 className="text-[10px] font-semibold text-[#3159b5] transition hover:text-blue-900"
               >
@@ -792,4 +894,4 @@ const evidenceCompletion =
       )}
     </div>
   );
-}
+} 

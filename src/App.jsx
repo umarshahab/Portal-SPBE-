@@ -1,12 +1,13 @@
 
 import { useState } from "react";
-
 import {
   BrowserRouter,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
+
+import { indicators as initialIndicators } from "./data/evaluationData";
 
 import PublicLayout from "./layouts/PublicLayout";
 
@@ -20,17 +21,42 @@ import Evaluasi from "./pages/Evaluasi";
 import DataEvidence from "./pages/DataEvidence";
 
 function App() {
-  // Penyimpanan evidence bersama antarhalaman
+  // Status login lokal
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    () => localStorage.getItem("spbe_authenticated") === "true"
+  );
+
+  // Data evidence bersama
   const [evidenceData, setEvidenceData] = useState({});
+
+  // Data indikator bersama
+  const [indicatorsData, setIndicatorsData] = useState(initialIndicators);
+
+  // Login berhasil
+  function handleLogin() {
+    localStorage.setItem("spbe_authenticated", "true");
+    setIsAuthenticated(true);
+  }
+
+  // Logout
+  function handleLogout() {
+    localStorage.removeItem("spbe_authenticated");
+    setIsAuthenticated(false);
+  }
 
   return (
     <BrowserRouter>
       <Routes>
+
+        {/* HALAMAN PUBLIK */}
         <Route
           path="/"
           element={
             <PublicLayout>
-              <Home />
+              <Home
+                evidenceData={evidenceData}
+                indicatorsData={indicatorsData}
+              />
             </PublicLayout>
           }
         />
@@ -71,38 +97,51 @@ function App() {
           }
         />
 
+        {/* LOGIN */}
         <Route
           path="/login"
-          element={<Login />}
+          element={<Login onLogin={handleLogin} />}
         />
 
-        {/* Dashboard evaluasi */}
+        {/* HALAMAN EVALUASI - WAJIB LOGIN */}
         <Route
           path="/preview/evaluasi"
           element={
-            <Evaluasi
-              evidenceData={evidenceData}
-              setEvidenceData={setEvidenceData}
-            />
+            isAuthenticated ? (
+              <Evaluasi
+                evidenceData={evidenceData}
+                setEvidenceData={setEvidenceData}
+                indicatorsData={indicatorsData}
+                setIndicatorsData={setIndicatorsData}
+                onLogout={handleLogout}
+              />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
-        {/* Halaman Data Evidence */}
+        {/* DATA EVIDENCE - WAJIB LOGIN */}
         <Route
           path="/preview/data-evidence"
           element={
-            <DataEvidence
-              evidenceData={evidenceData}
-              setEvidenceData={setEvidenceData}
-            />
+            isAuthenticated ? (
+              <DataEvidence
+                evidenceData={evidenceData}
+                setEvidenceData={setEvidenceData}
+              />
+            ) : (
+              <Navigate to="/login" replace />
+            )
           }
         />
 
-        {/* Evaluasi sebenarnya tetap diarahkan ke login */}
+        {/* ROUTE EVALUASI LAMA */}
         <Route
           path="/evaluasi/*"
           element={<Navigate to="/login" replace />}
         />
+
       </Routes>
     </BrowserRouter>
   );
