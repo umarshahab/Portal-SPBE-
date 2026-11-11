@@ -1,6 +1,5 @@
-
-import { useState } from "react";
-import {
+import { useState } from "react"; 
+import { 
   BrowserRouter,
   Routes,
   Route,
@@ -21,12 +20,12 @@ import Evaluasi from "./pages/Evaluasi";
 import DataEvidence from "./pages/DataEvidence";
 
 function App() {
-  // Status login lokal
+  // Status login tetap dipertahankan
   const [isAuthenticated, setIsAuthenticated] = useState(
     () => localStorage.getItem("spbe_authenticated") === "true"
   );
 
-  // Data evidence bersama
+  // Data evidence bersama untuk seluruh portal
   const [evidenceData, setEvidenceData] = useState({});
 
   // Data indikator bersama
@@ -47,8 +46,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-
-        {/* HALAMAN PUBLIK */}
+        {/* DASHBOARD PEMDI */}
         <Route
           path="/"
           element={
@@ -97,51 +95,56 @@ function App() {
           }
         />
 
-        {/* LOGIN */}
+        {/* LOGIN TETAP TERSEDIA */}
         <Route
           path="/login"
           element={<Login onLogin={handleLogin} />}
         />
 
-        {/* HALAMAN EVALUASI - WAJIB LOGIN */}
+        {/* DASHBOARD EVALUASI */}
         <Route
-          path="/preview/evaluasi"
+          path="/evaluasi"
           element={
-            isAuthenticated ? (
-              <Evaluasi
-                evidenceData={evidenceData}
-                setEvidenceData={setEvidenceData}
-                indicatorsData={indicatorsData}
-                setIndicatorsData={setIndicatorsData}
-                onLogout={handleLogout}
-              />
-            ) : (
-              <Navigate to="/login" replace />
-            )
+            <Evaluasi
+              evidenceData={evidenceData}
+              setEvidenceData={setEvidenceData}
+              indicatorsData={indicatorsData}
+              setIndicatorsData={setIndicatorsData}
+              onLogout={handleLogout}
+            />
           }
         />
 
-        {/* DATA EVIDENCE - WAJIB LOGIN */}
+        {/* DATA EVIDENCE */}
+        <Route
+          path="/evaluasi/data-evidence"
+          element={
+            <DataEvidence
+              evidenceData={evidenceData}
+              setEvidenceData={setEvidenceData}
+            />
+          }
+        />
+
+        {/*REDIRECT ROUTE LAMA*/}
+
+        <Route
+          path="/preview/evaluasi"
+          element={<Navigate to="/evaluasi" replace />}
+        />
+
         <Route
           path="/preview/data-evidence"
           element={
-            isAuthenticated ? (
-              <DataEvidence
-                evidenceData={evidenceData}
-                setEvidenceData={setEvidenceData}
-              />
-            ) : (
-              <Navigate to="/login" replace />
-            )
+            <Navigate to="/evaluasi/data-evidence" replace />
           }
         />
 
-        {/* ROUTE EVALUASI LAMA */}
+        {/* Halaman tidak ditemukan */}
         <Route
-          path="/evaluasi/*"
-          element={<Navigate to="/login" replace />}
+          path="*"
+          element={<Navigate to="/" replace />}
         />
-
       </Routes>
     </BrowserRouter>
   );

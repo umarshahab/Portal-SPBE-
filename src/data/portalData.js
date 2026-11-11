@@ -10,31 +10,31 @@ export const navigation = [
 export const domains = [
   {
     number: "01",
-    title: "Kebijakan SPBE",
+    title: "Kebijakan PEMDI",
     description:
-      "Informasi kebijakan dan landasan penerapan Sistem Pemerintahan Berbasis Elektronik.",
+      "Informasi kebijakan dan landasan penyelenggaraan Pemerintahan Digital.",
     path: "/indeks",
     icon: "file-check",
   },
   {
     number: "02",
-    title: "Tata Kelola SPBE",
+    title: "Tata Kelola PEMDI",
     description:
-      "Informasi tata kelola, koordinasi, dan pengelolaan SPBE Pemerintah Kota Dumai.",
+      "Informasi tata kelola, koordinasi, dan pengelolaan Pemerintahan Digital Pemerintah Kota Dumai.",
     path: "/indeks",
     icon: "network",
   },
   {
     number: "03",
-    title: "Manajemen SPBE",
+    title: "Manajemen PEMDI",
     description:
-      "Informasi manajemen risiko, keamanan, data, dan sumber daya SPBE.",
+      "Informasi manajemen risiko, keamanan, data, dan sumber daya Pemerintahan Digital.",
     path: "/indeks",
     icon: "settings",
   },
   {
     number: "04",
-    title: "Layanan SPBE",
+    title: "Layanan PEMDI",
     description:
       "Informasi layanan administrasi pemerintahan dan layanan publik berbasis digital.",
     path: "/indeks",
@@ -42,47 +42,68 @@ export const domains = [
   },
 ];
 
+// Dokumentasi kegiatan
+// Gambar saat ini masih ilustrasi dan perlu diganti dengan foto resmi.
 export const gallery = [
   {
-    title: "Rapat Lintas OPD Guna Peningkatan Progres Kesiapan Penilaian SPBE",
+    id: 1,
+    title:
+      "Rapat Lintas OPD Guna Peningkatan Progres Kesiapan Penilaian PEMDI",
     category: "Kegiatan",
     image:
       "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=900",
+    isSample: true,
   },
   {
+    id: 2,
     title: "Rapat Bidang Aplikasi dengan Bidang Layanan",
     category: "Koordinasi",
     image:
       "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=900",
+    isSample: true,
   },
   {
-    title: "Rapat Rutin Untuk Pengerjaan SPBE",
+    id: 3,
+    title: "Rapat Rutin Untuk Pengerjaan PEMDI",
     category: "Kegiatan",
     image:
       "https://images.unsplash.com/photo-1552664730-d307ca884978?w=900",
+    isSample: true,
   },
   {
+    id: 4,
     title: "Rapat Kolaborasi Dengan Dinas Perizinan",
     category: "Kolaborasi",
     image:
       "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=900",
+    isSample: true,
   },
 ];
 
+// Dokumen pendukung yang akan diisi dengan dokumen resmi.
 export const documents = [
   {
-    title: "Dokumen Kebijakan Sistem Pemerintahan Berbasis Elektronik",
+    id: 1,
+    title: "Dokumen Kebijakan Pemerintahan Digital",
     category: "Kebijakan",
-    date: "Dokumen SPBE",
+    date: "Belum tersedia",
+    status: "Menunggu dokumen",
+    url: null,
   },
   {
-    title: "Dokumen Tata Kelola SPBE",
+    id: 2,
+    title: "Dokumen Tata Kelola Pemerintahan Digital",
     category: "Tata Kelola",
-    date: "Dokumen SPBE",
+    date: "Belum tersedia",
+    status: "Menunggu dokumen",
+    url: null,
   },
   {
-    title: "Dokumen Manajemen SPBE",
+    id: 3,
+    title: "Dokumen Manajemen Pemerintahan Digital",
     category: "Manajemen",
-    date: "Dokumen SPBE",
+    date: "Belum tersedia",
+    status: "Menunggu dokumen",
+    url: null,
   },
 ];

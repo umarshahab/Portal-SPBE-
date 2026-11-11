@@ -12,6 +12,7 @@ import {
 } from "../data/evaluationData";
 
 import EvidenceManager from "../components/EvidenceManager";
+import AppSwitcher from "../components/AppSwitcher";
 
 const filters = ["Semua", "Internal", "External", "Terisi Evidence"];
 
@@ -210,7 +211,7 @@ export default function Evaluasi({
 
             <button
               onClick={() =>
-                navigate("/preview/data-evidence")
+                navigate("/evaluasi/data-evidence")
               }
               className="flex w-full items-center gap-3 rounded-lg px-3.5 py-3 text-[13px] text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
             >
@@ -289,17 +290,10 @@ export default function Evaluasi({
                 Sistem Evaluasi Pemerintah Digital
               </p>
             </div>
-            <button
-              type="button"
-              onClick={() => navigate("/")}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700"
-            >
-              <ArrowLeft size={15} />
-              Kembali ke Dashboard
-            </button>
           </div>
 
           <div className="flex items-center gap-4">
+            <AppSwitcher />
             <button
               aria-label="Notifikasi"
               className="relative rounded-lg p-2.5 text-slate-500 transition hover:bg-slate-100"

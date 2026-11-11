@@ -5,7 +5,6 @@ import {
   FileText,
   ShieldCheck,
   Building2,
-  ChevronRight,
   Activity,
   Gauge,
   ClipboardList,
@@ -134,10 +133,9 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
             </h1>
 
             <p className="mt-7 max-w-xl text-base leading-8 text-blue-100 md:text-lg">
-              Portal Sistem Pemerintahan Berbasis Elektronik
-              Kota Dumai sebagai pusat informasi kebijakan,
-              tata kelola, manajemen, dan layanan pemerintahan
-              berbasis elektronik.
+              Portal Pemerintah Digital Kota Dumai sebagai pusat
+              informasi kebijakan, tata kelola, manajemen, dan
+              layanan pemerintahan digital.
             </p>
 
             <div className="mt-9 flex flex-wrap gap-4">
@@ -145,17 +143,19 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
                 to="/indeks"
                 className="inline-flex items-center gap-2 rounded-lg bg-white px-6 py-3.5 font-semibold text-blue-900 transition hover:bg-blue-50"
               >
-                Jelajahi SPBE
+                Jelajahi PEMDI
                 <ArrowRight size={18} />
               </Link>
 
-              <Link
-                to="/login"
+              <a
+                href="https://spbe.dumaikota.go.id/"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-6 py-3.5 font-semibold text-white transition hover:bg-white/10"
               >
-                Evaluasi SPBE
+                Portal SPBE
                 <ArrowUpRight size={18} />
-              </Link>
+              </a>
             </div>
           </div>
 
@@ -173,7 +173,7 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
                 </p>
 
                 <p className="mt-1 text-lg font-bold text-blue-900">
-                  SPBE Kota Dumai
+                  PEMDI Kota Dumai
                 </p>
               </div>
             </div>
@@ -186,16 +186,16 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
         <div className="mx-auto grid max-w-7xl items-center gap-12 px-5 lg:grid-cols-2 lg:px-8">
           <div>
             <SectionTitle
-              eyebrow="Tentang SPBE"
+              eyebrow="Tentang PEMDI"
               title="Transformasi Digital Pemerintahan"
-              description="Sistem Pemerintahan Berbasis Elektronik merupakan penyelenggaraan pemerintahan yang memanfaatkan teknologi informasi dan komunikasi untuk memberikan layanan kepada pengguna SPBE."
+              description="Pemerintah Digital merupakan upaya penyelenggaraan pemerintahan dengan memanfaatkan teknologi digital untuk meningkatkan tata kelola pemerintahan dan kualitas pelayanan publik."
             />
 
             <p className="text-sm leading-8 text-slate-500">
-              Melalui penerapan SPBE, Pemerintah Kota Dumai
-              mendorong tata kelola pemerintahan yang efektif,
-              efisien, transparan, dan akuntabel serta
-              meningkatkan kualitas pelayanan publik.
+              Melalui transformasi pemerintah digital, Pemerintah Kota
+              Dumai mendorong tata kelola pemerintahan yang efektif,
+              efisien, transparan, dan akuntabel serta meningkatkan
+              kualitas pelayanan publik.
             </p>
           </div>
 
@@ -241,7 +241,7 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
               </h3>
 
               <p className="mt-2 text-sm leading-6 text-slate-500">
-                Landasan penerapan SPBE.
+                Landasan kebijakan Pemerintah Digital.
               </p>
             </div>
 
@@ -276,22 +276,14 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
               </div>
 
               <h2 className="text-3xl font-bold tracking-tight text-slate-900 md:text-4xl">
-                Hasil Evaluasi Pemerintah Digital
+                Hasil Evaluasi PEMDI
               </h2>
 
               <p className="mt-3 max-w-2xl text-sm leading-7 text-slate-500">
                 Gambaran hasil penilaian, perkembangan indikator,
-                dan kelengkapan data dukung SPBE Pemerintah Kota Dumai.
+                dan kelengkapan data dukung PEMDI Pemerintah Kota Dumai.
               </p>
             </div>
-
-            <Link
-              to="/login"
-              className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-blue-900 px-5 py-3 text-sm font-semibold text-white transition hover:bg-blue-800"
-            >
-              Lihat Evaluasi
-              <ArrowUpRight size={17} />
-            </Link>
           </div>
 
           {/* SUMMARY CARDS */}
@@ -574,13 +566,13 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
         </div>
       </section>
 
-      {/* DOMAIN SPBE */}
+      {/* DOMAIN PEMDI */}
       <section className="bg-slate-50 py-20">
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <SectionTitle
             eyebrow="Ruang Lingkup"
-            title="Domain Sistem Pemerintahan Berbasis Elektronik"
-            description="Kenali empat domain utama penerapan SPBE yang menjadi landasan transformasi digital Pemerintah Kota Dumai."
+            title="Domain Pemerintah Digital"
+            description="Kenali empat domain utama yang menjadi landasan transformasi digital Pemerintah Kota Dumai."
           />
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -601,7 +593,7 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
             <SectionTitle
               eyebrow="Dokumentasi"
               title="Galeri Kegiatan"
-              description="Dokumentasi kegiatan dan koordinasi penerapan SPBE Kota Dumai."
+              description="Dokumentasi kegiatan dan koordinasi penerapan PEMDI Kota Dumai."
             />
 
             <Link
@@ -647,8 +639,8 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
         <div className="mx-auto max-w-7xl px-5 lg:px-8">
           <SectionTitle
             eyebrow="Pusat Dokumen"
-            title="Dokumen SPBE"
-            description="Kumpulan dokumen pendukung kebijakan, tata kelola, dan manajemen SPBE."
+            title="Dokumen PEMDI"
+            description="Kumpulan dokumen pendukung kebijakan, tata kelola, dan manajemen Pemerintah Digital."
           />
 
           <div className="grid gap-5 md:grid-cols-3">
@@ -677,34 +669,6 @@ const lowestAspect = sortedAspects[sortedAspects.length - 1];
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* EVALUATION CTA */}
-      <section className="bg-blue-900 py-16">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 px-5 text-center md:flex-row md:text-left lg:px-8">
-          <div>
-            <p className="mb-3 text-sm font-bold uppercase tracking-widest text-cyan-300">
-              Evaluasi SPBE
-            </p>
-
-            <h2 className="text-3xl font-bold text-white">
-              Pengelolaan Evaluasi SPBE
-            </h2>
-
-            <p className="mt-3 max-w-xl leading-7 text-blue-100">
-              Akses sistem evaluasi dan pengelolaan data dukung
-              SPBE melalui akun pengguna yang telah terdaftar.
-            </p>
-          </div>
-
-          <Link
-            to="/login"
-            className="inline-flex shrink-0 items-center gap-3 rounded-lg bg-white px-6 py-4 font-bold text-blue-900 transition hover:bg-blue-50"
-          >
-            Masuk ke Evaluasi
-            <ChevronRight size={19} />
-          </Link>
         </div>
       </section>
     </>
