@@ -15,6 +15,7 @@ import {
 
 import { Link } from "react-router-dom";
 import { aspects, indicators } from "../data/evaluationData";
+import { indicatorModules } from "../data/indicatorModules";
 
 function formatFileSize(bytes = 0) {
   if (!bytes || bytes <= 0) return "0 KB";
@@ -37,14 +38,45 @@ function DataEvidence({ evidenceData = {}, setEvidenceData }) {
   const [selectedAspect, setSelectedAspect] = useState("all");
   const [previewFile, setPreviewFile] = useState(null);
 
-  // Menggabungkan data indikator, aspek, dan file evidence
+  // Mengambil seluruh file dari format evidence baru dan lama.
   const allFiles = useMemo(() => {
     return indicators.flatMap((indicator) => {
       const aspect = aspects.find(
-        (item) => item.id === indicator.aspectId
+        (item) => Number(item.id) === Number(indicator.aspectId)
       );
 
-      const files = evidenceData[indicator.id] || [];
+      const indicatorEvidence = evidenceData?.[indicator.id];
+
+      if (!indicatorEvidence) return [];
+
+      // Mendukung format lama dan format baru.
+      const files = Array.isArray(indicatorEvidence)
+        ? indicatorEvidence.map((file) => ({
+            ...file,
+            requirementId: null,
+            requirementName: "Unggahan sebelumnya",
+          }))
+        : Object.entries(indicatorEvidence).flatMap(
+            ([requirementId, requirementFiles]) => {
+              if (!Array.isArray(requirementFiles)) return [];
+
+              const moduleData = indicatorModules[indicator.id];
+
+              const requirement = moduleData?.criteria
+                ?.flatMap((level) => level.requirements || [])
+                .find((item) => item.id === requirementId);
+
+              return requirementFiles.map((file) => ({
+                ...file,
+                requirementId:
+                  requirementId === "_legacy" ? null : requirementId,
+                requirementName:
+                  requirementId === "_legacy"
+                    ? "Unggahan sebelumnya"
+                    : requirement?.name || "Data dukung",
+              }));
+            }
+          );
 
       return files.map((file) => ({
         ...file,
@@ -52,7 +84,8 @@ function DataEvidence({ evidenceData = {}, setEvidenceData }) {
         type: file.type || "application/octet-stream",
         size: file.size || 0,
         indicatorId: indicator.id,
-        indicatorName: indicator.name,
+        indicatorName:
+          indicatorModules[indicator.id]?.title || indicator.name,
         aspectId: indicator.aspectId,
         aspectName: aspect?.name || "-",
         architecture: aspect?.architecture || "-",
@@ -81,12 +114,12 @@ function DataEvidence({ evidenceData = {}, setEvidenceData }) {
   // Rekapitulasi dokumen
   const totalFiles = allFiles.length;
 
-  const totalIndicators = indicators.filter(
-    (indicator) => (evidenceData[indicator.id] || []).length > 0
-  ).length;
+  const totalIndicators = new Set(
+    allFiles.map((file) => file.indicatorId)
+  ).size;
 
   const totalSize = allFiles.reduce(
-    (total, file) => total + file.size,
+    (total, file) => total + Number(file.size || 0),
     0
   );
 
@@ -102,12 +135,37 @@ function DataEvidence({ evidenceData = {}, setEvidenceData }) {
       setPreviewFile(null);
     }
 
-    setEvidenceData((current) => ({
-      ...current,
-      [file.indicatorId]: (current[file.indicatorId] || []).filter(
-        (item) => item.id !== file.id
-      ),
-    }));
+    setEvidenceData((current) => {
+      const indicatorEvidence = current?.[file.indicatorId];
+
+      // Format evidence lama.
+      if (Array.isArray(indicatorEvidence)) {
+        return {
+          ...current,
+          [file.indicatorId]: indicatorEvidence.filter(
+            (item) => item.id !== file.id
+          ),
+        };
+      }
+
+      // Format evidence baru.
+      const requirementId = file.requirementId;
+
+      if (!requirementId) return current;
+
+      const requirementFiles =
+        indicatorEvidence?.[requirementId] || [];
+
+      return {
+        ...current,
+        [file.indicatorId]: {
+          ...indicatorEvidence,
+          [requirementId]: requirementFiles.filter(
+            (item) => item.id !== file.id
+          ),
+        },
+      };
+    });
 
     if (file.url) {
       URL.revokeObjectURL(file.url);
@@ -323,6 +381,9 @@ function DataEvidence({ evidenceData = {}, setEvidenceData }) {
                         <td className="px-5 py-4">
                           <p className="max-w-64 text-sm leading-5 text-slate-700">
                             {file.indicatorName}
+                          </p>
+                          <p className="mt-1 text-xs text-slate-400">
+                            {file.requirementName}
                           </p>
                         </td>
 

@@ -23,6 +23,23 @@ const architectureIcons = [
   ShieldCheck,
 ];
 
+function countUploadedEvidence(indicatorEvidence) {
+  if (Array.isArray(indicatorEvidence)) {
+    return indicatorEvidence.length;
+  }
+
+  if (!indicatorEvidence || typeof indicatorEvidence !== "object") {
+    return 0;
+  }
+
+  return Object.entries(indicatorEvidence)
+    .filter(([key]) => key !== "_legacy")
+    .reduce(
+      (total, [, files]) => total + (files?.length || 0),
+      indicatorEvidence._legacy?.length || 0
+    );
+}
+
 export default function Evaluasi({
   evidenceData,
   setEvidenceData,
@@ -85,9 +102,9 @@ export default function Evaluasi({
         aspect?.name.toLowerCase().includes(keyword) ||
         `ind-${item.id}`.includes(keyword);
 
-      const uploadedCount = (
-        evidenceData?.[item.id] || []
-      ).length;
+      const indicatorEvidence = evidenceData?.[item.id] || {};
+
+      const uploadedCount = countUploadedEvidence(evidenceData?.[item.id]);
 
       const matchesFilter =
         filter === "Semua" ||
@@ -121,15 +138,15 @@ export default function Evaluasi({
 
   // Total evidence yang sudah diunggah
   const uploadedEvidenceCount = indicatorsData.reduce(
-    (total, indicator) =>
-      total + (evidenceData?.[indicator.id] || []).length,
+  (total, indicator) =>
+    total + countUploadedEvidence(evidenceData?.[indicator.id]),
     0
   );
 
   // Jumlah indikator yang memiliki evidence
   const filledIndicatorCount = indicatorsData.filter(
     (indicator) =>
-      (evidenceData?.[indicator.id] || []).length > 0
+      countUploadedEvidence(evidenceData?.[indicator.id]) > 0
   ).length;
 
   const totalIndicatorCount = indicatorsData.length;
