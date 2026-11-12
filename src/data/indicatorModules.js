@@ -1290,7 +1290,7 @@ export const indicatorModules = {
       {
         level: 5,
         name: "Leading/Memuaskan",
-        maxPM: 0.5,
+        maxPM: 1,
         requirements: [
           {
             id: "13-5-1",
@@ -1996,3 +1996,4 @@ export const indicatorModules = {
     sourceStatus: "needs-extraction",
   },
 };
+

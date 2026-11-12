@@ -13,6 +13,7 @@ import {
 
 import EvidenceManager from "../components/EvidenceManager";
 import AppSwitcher from "../components/AppSwitcher";
+import ModuleDocumentLink from "../components/ModuleDocumentLink";
 
 const filters = ["Semua", "Internal", "External", "Terisi Evidence"];
 
@@ -104,7 +105,9 @@ export default function Evaluasi({
 
       const indicatorEvidence = evidenceData?.[item.id] || {};
 
-      const uploadedCount = countUploadedEvidence(evidenceData?.[item.id]);
+      const uploadedCount = countUploadedEvidence(
+        evidenceData?.[item.id]
+      );
 
       const matchesFilter =
         filter === "Semua" ||
@@ -113,7 +116,7 @@ export default function Evaluasi({
 
       return matchesSearch && matchesFilter;
     });
-  }, [
+  }, [  
     search,
     filter,
     evidenceData,
@@ -673,8 +676,8 @@ export default function Evaluasi({
                       Evidence
                     </th>
 
-                    <th className="w-24 px-4 py-3.5 text-center font-semibold">
-                      Detail
+                    <th className="w-36 px-4 py-3.5 text-center font-semibold">
+                      Informasi
                     </th>
                   </tr>
                 </thead>
@@ -751,13 +754,18 @@ export default function Evaluasi({
                                 <td className="px-5 py-3.5 text-[11px] tabular-nums text-slate-400">
                                   {item.id}
                                 </td>
-
                                 <td className="px-4 py-3.5">
-                                  <p className="max-w-[440px] text-[12px] font-medium leading-5 text-slate-700">
-                                    {item.name}
-                                  </p>
-                                </td>
+                                  <div className="flex flex-col items-start gap-1">
+                                    <p className="max-w-[440px] text-[12px] font-medium leading-5 text-slate-700">
+                                      {item.name}
+                                    </p>
 
+                                    <ModuleDocumentLink
+                                      indicatorId={item.id}
+                                      variant="compact"
+                                    />
+                                  </div>
+                                </td>
                                 <td className="px-4 py-3.5">
                                   <span
                                     className={`text-[10px] font-medium ${
@@ -822,9 +830,7 @@ export default function Evaluasi({
                                 {/* DETAIL */}
                                 <td className="px-4 py-3.5 text-center">
                                   <button
-                                    onClick={() =>
-                                      setSelectedIndicator(item)
-                                    }
+                                    onClick={() => setSelectedIndicator(item)}
                                     aria-label={`Detail indikator ${item.id}`}
                                     className="inline-flex items-center gap-1 rounded-md px-2 py-1.5 text-[10px] font-semibold text-[#3159b5] transition hover:bg-blue-50"
                                   >
