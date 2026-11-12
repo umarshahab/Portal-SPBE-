@@ -1,89 +1,168 @@
+# Portal Pemerintah Digital (PEMDI) Kota Dumai
 
-# Portal SPBE Kota Dumai
+Portal Pemerintah Digital (PEMDI) Kota Dumai merupakan aplikasi berbasis web yang dikembangkan untuk mendukung penyelenggaraan, pengelolaan, dan pemantauan evaluasi Pemerintah Digital di lingkungan Pemerintah Kota Dumai.
 
-Portal SPBE Kota Dumai merupakan aplikasi berbasis web yang dikembangkan untuk mendukung pengelolaan dan pemantauan evaluasi Sistem Pemerintahan Berbasis Elektronik (SPBE) di lingkungan Pemerintah Kota Dumai.
+Aplikasi ini dirancang sebagai platform terintegrasi untuk menyajikan informasi Pemerintah Digital, memantau pemenuhan indikator evaluasi, serta mengelola dokumen evidence sebagai bukti dukung pelaksanaan evaluasi.
 
 ## Tentang Project
 
-Aplikasi ini dirancang untuk membantu pengelolaan data evaluasi SPBE, dokumen evidence, serta proses pemantauan pemenuhan indikator evaluasi dalam satu platform terintegrasi.
+Portal PEMDI Kota Dumai merupakan pengembangan portal yang sebelumnya berfokus pada Sistem Pemerintahan Berbasis Elektronik (SPBE). Seiring dengan penyesuaian arah pengembangan, sistem dan antarmuka mulai disesuaikan dengan konsep Pemerintah Digital.
+
+Pengembangan saat ini difokuskan pada sisi frontend menggunakan React.js. Integrasi backend dan database akan dikembangkan pada tahap selanjutnya.
 
 ## Teknologi
 
-- React.js
-- Vite
-- JavaScript
-- Tailwind CSS (jika digunakan)
+- React.js 19
+- Vite 8
+- JavaScript (ES6+)
+- Tailwind CSS 4
+- React Router DOM
+- Lucide React
 - Node.js dan npm
 
-## Fitur
+## Fitur dan Progres Pengembangan
 
-Fitur yang telah dikembangkan dan direncanakan:
+### 1. Portal Utama
 
-- [x] Halaman login
-- [x] Antarmuka utama aplikasi
-- [x] Pengelolaan halaman evaluasi
+- [x] Landing page Portal PEMDI Kota Dumai
+- [x] Bagian pengenalan dan informasi Pemerintah Digital
+- [x] Dashboard ringkasan evaluasi
+- [x] Visualisasi aspek dan domain evaluasi
+- [x] Galeri dokumentasi
+- [x] Bagian dokumen dan informasi pendukung
+- [x] Navigasi menuju halaman evaluasi
+
+### 2. Portal Evaluasi
+
+- [x] Halaman evaluasi Pemerintah Digital
+- [x] Penyajian indikator evaluasi
+- [x] Pengelompokan indikator berdasarkan kategori Internal dan External
+- [x] Informasi bobot dan tingkat kematangan indikator
+- [x] Penyajian substansi dan kebutuhan evidence
+- [x] Referensi modul dokumen untuk 20 indikator evaluasi
+- [x] Filter daftar indikator dan evidence
+
+### 3. Pengelolaan Evidence
+
 - [x] Upload dokumen evidence
-- [x] Preview dokumen evidence
-- [x] Download dan hapus evidence
-- [ ] Integrasi backend dan database
-- [ ] Pengelolaan pengguna dan hak akses
-- [ ] Dashboard evaluasi
-- [ ] Penyempurnaan laporan evaluasi
+- [x] Preview dokumen PDF dan gambar
+- [x] Download dokumen evidence
+- [x] Hapus dokumen evidence
+- [x] Validasi format dan ukuran file
+- [x] Dukungan PDF, JPG, PNG, dan WEBP
+- [x] Batas ukuran file maksimal 10 MB
+- [x] Ringkasan jumlah evidence yang telah diunggah
 
-*Status fitur akan diperbarui mengikuti perkembangan project.*
+**Catatan:** Pengelolaan evidence saat ini masih berjalan di sisi frontend menggunakan penyimpanan sementara browser. Integrasi penyimpanan permanen melalui backend dan database belum diimplementasikan.
+
+### 4. Pengembangan Selanjutnya
+
+- [ ] Perancangan dan implementasi backend API
+- [ ] Integrasi database
+- [ ] Autentikasi dan otorisasi pengguna
+- [ ] Pengelolaan pengguna dan hak akses
+- [ ] Penyimpanan evidence secara permanen
+- [ ] Integrasi data evaluasi dengan backend
+- [ ] Penyempurnaan perhitungan dan visualisasi hasil evaluasi
+- [ ] Pengelolaan laporan evaluasi
+- [ ] Pengujian dan penyempurnaan sistem
 
 ## Struktur Project
 
 ```text
 portal-spbe/
 ├── public/
+│   ├── modules/
+│   │   ├── Modul Indikator 1.pptx
+│   │   ├── Modul Indikator 2.pptx
+│   │   └── ... (hingga indikator 20)
+│   └── assets/
+│
 ├── src/
 │   ├── assets/
 │   ├── components/
+│   ├── data/
+│   │   ├── evaluationData.js
+│   │   └── portalData.js
+│   ├── layouts/
 │   ├── pages/
-│   └── ...
+│   │   ├── Home.jsx
+│   │   └── Evaluasi.jsx
+│   ├── utils/
+│   ├── App.jsx
+│   ├── main.jsx
+│   └── index.css
+│
 ├── index.html
 ├── package.json
 ├── vite.config.js
 └── README.md
 ```
 
-## Instalasi
+*Struktur di atas merupakan gambaran direktori utama project dan dapat berkembang mengikuti implementasi berikutnya.*
 
-Pastikan Node.js dan npm telah terpasang.
+## Instalasi dan Menjalankan Project
 
-Clone repository:
+### Persyaratan
+
+Pastikan perangkat telah memiliki:
+
+- Node.js
+- npm
+- Git
+
+### 1. Clone Repository
 
 ```bash
-git clone URL_REPOSITORY
+git clone https://github.com/umarshahab/Portal-SPBE-.git
 ```
 
-Masuk ke direktori project:
+### 2. Masuk ke Direktori Project
 
 ```bash
-cd portal-spbe
+cd Portal-SPBE-
 ```
 
-Install dependencies:
+### 3. Install Dependencies
 
 ```bash
 npm install
 ```
 
-Jalankan aplikasi:
+### 4. Jalankan Development Server
 
 ```bash
 npm run dev
 ```
 
-## Pengembangan
+Aplikasi dapat diakses melalui alamat lokal yang ditampilkan oleh Vite, biasanya:
 
-Project ini masih dalam tahap pengembangan. Fitur, dokumentasi, dan integrasi sistem akan diperbarui secara bertahap.
+```text
+http://localhost:5173
+```
 
-## Dokumentasi
+### 5. Build untuk Production
 
-Dokumentasi fitur dan progres pengembangan akan tersedia pada direktori `docs/`.
+```bash
+npm run build
+```
+
+Untuk menjalankan hasil build secara lokal:
+
+```bash
+npm run preview
+```
+
+## Status Pengembangan
+
+Project Portal PEMDI Kota Dumai masih dalam tahap pengembangan bertahap.
+
+Pengembangan saat ini berfokus pada penyempurnaan antarmuka, struktur halaman evaluasi, penyajian indikator, dan pengelolaan evidence. Tahap berikutnya diarahkan pada perancangan arsitektur backend, integrasi database, autentikasi, serta pengembangan mekanisme penyimpanan data secara permanen.
+
+## Repository
+
+GitHub: https://github.com/umarshahab/Portal-SPBE-
 
 ## Lisensi
 
-Project ini dikembangkan untuk mendukung kebutuhan pengelolaan evaluasi SPBE Kota Dumai.
+Project ini dikembangkan untuk mendukung kebutuhan pengelolaan dan pemantauan evaluasi Pemerintah Digital di lingkungan Pemerintah Kota Dumai.
