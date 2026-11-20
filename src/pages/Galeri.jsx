@@ -1,4 +1,4 @@
-
+import { usePortalContent } from "../context/PortalContentContext";
 import { useMemo, useState } from "react";
 import {
   Search,
@@ -9,9 +9,11 @@ import {
 } from "lucide-react";
 
 import SectionTitle from "../components/SectionTitle";
-import { gallery } from "../data/portalData";
-
+ 
 export default function Galeri() {
+  const { content } = usePortalContent();
+  const gallery = content.gallery;
+
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [selectedImage, setSelectedImage] = useState(null);

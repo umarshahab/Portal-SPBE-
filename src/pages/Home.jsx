@@ -19,26 +19,8 @@ import { Link } from "react-router-dom";
 import { aspects } from "../data/evaluationData";
 import SectionTitle from "../components/SectionTitle";
 import DomainCard from "../components/DomainCard";
-import {
-  domains,
-  gallery,
-  documents,
-} from "../data/portalData";
-
-const heroImages = [
-  {
-    src: "/dmi1.jpg",
-    alt: "Dokumentasi Pemerintah Kota Dumai",
-  },
-  {
-    src: "/dmi2.jpg",
-    alt: "Kegiatan Pemerintah Kota Dumai",
-  },
-  {
-    src: "/dmi3.jpg",
-    alt: "Lingkungan Pemerintah Kota Dumai",
-  },
-];
+import { domains } from "../data/portalData";
+import { usePortalContent } from "../context/PortalContentContext";
 
 // REUSABLE COMPONENTS
 
@@ -193,49 +175,72 @@ export default function Home({
   evidenceData = {},
   indicatorsData = [],
 }) {
+  const { content } = usePortalContent();
+
+console.log(
+  "EVIDENCE DATA DETAIL:",
+  JSON.stringify(evidenceData, null, 2)
+);
+
+console.log(
+  "INDICATORS DATA DETAIL:",
+  JSON.stringify(indicatorsData, null, 2)
+);
+
+  const gallery = content.gallery;
+  const documents = content.documents;
+  const heroImages = content.heroImages;
 
   const [activeHeroImage, setActiveHeroImage] = useState(0);
 
   useEffect(() => {
+    if (heroImages.length <= 1) return;
+
     const interval = setInterval(() => {
-      setActiveHeroImage((current) => (current + 1) % heroImages.length);
+      setActiveHeroImage(
+        (current) => (current + 1) % heroImages.length
+      );
     }, 4000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages.length]);
 
-
-  // Mendapatkan file evidence berdasarkan ID indikator.
-  // Mendukung struktur lama (array) dan struktur baru (object).
-  const getIndicatorFiles = (indicatorId) => {
-    const indicatorEvidence = evidenceData?.[indicatorId];
-
-    if (!indicatorEvidence) return [];
-
-    if (Array.isArray(indicatorEvidence)) {
-      return indicatorEvidence;
-    }
-
-    if (typeof indicatorEvidence === "object") {
-      return Object.values(indicatorEvidence).flatMap((files) =>
-        Array.isArray(files) ? files : []
-      );
-    }
-
-    return [];
-  };
 
   // EVIDENCE SUMMARY
 
-  const uploadedEvidenceCount = indicatorsData.reduce(
-    (total, indicator) =>
-      total + getIndicatorFiles(indicator.id).length,
+  const getIndicatorFileCount = (indicatorId) => {
+  const indicatorEvidence = evidenceData?.[indicatorId];
+
+  if (!indicatorEvidence) return 0;
+
+  // Format upload lama
+  if (Array.isArray(indicatorEvidence)) {
+    return indicatorEvidence.length;
+  }
+
+  // Format upload berdasarkan ID persyaratan
+  return Object.entries(indicatorEvidence).reduce(
+    (total, [key, files]) => {
+      if (key === "_legacy") {
+        return total + (Array.isArray(files) ? files.length : 0);
+      }
+
+      return total + (Array.isArray(files) ? files.length : 0);
+    },
     0
   );
+};
 
-  const filledIndicatorCount = indicatorsData.filter(
-    (indicator) => getIndicatorFiles(indicator.id).length > 0
-  ).length;
+const uploadedEvidenceCount = indicatorsData.reduce(
+  (total, indicator) =>
+    total + getIndicatorFileCount(indicator.id),
+  0
+);
+
+const filledIndicatorCount = indicatorsData.filter(
+  (indicator) =>
+    getIndicatorFileCount(indicator.id) > 0
+).length;
 
   const totalEvidenceTarget = indicatorsData.reduce(
     (total, indicator) => {
@@ -413,7 +418,7 @@ export default function Home({
                 {/* Gambar bergantian otomatis */}
                 {heroImages.map((image, index) => (
                   <img
-                    key={image.src}
+                    key={image.id ?? image.src}
                     src={image.src}
                     alt={image.alt}
                     className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out ${

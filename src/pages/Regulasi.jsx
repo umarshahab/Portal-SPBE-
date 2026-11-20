@@ -1,4 +1,4 @@
-
+import { usePortalContent } from "../context/PortalContentContext";
 import { useMemo, useState } from "react";
 import {
   FileText,
@@ -11,10 +11,11 @@ import {
 
 import SectionTitle from "../components/SectionTitle";
 
-// Data regulasi akan diisi berdasarkan dokumen resmi
-const regulations = [];
 
 export default function Regulasi() {
+  const { content } = usePortalContent();
+  const regulations = content.regulations;
+
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("Semua");
 

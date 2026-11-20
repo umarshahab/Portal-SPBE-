@@ -1,33 +1,49 @@
 
 import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Grid3X3,
   X,
   Landmark,
-  ClipboardCheck,
+  FolderOpen,
+  Settings,
+  LogOut,
 } from "lucide-react";
 
 const applications = [
   {
-    name: "PEMDI",
+    name: "Portal PEMDI",
     description: "Portal Pemerintah Digital",
     path: "/",
     icon: Landmark,
     color: "bg-blue-100 text-blue-700",
   },
   {
-    name: "Evaluasi",
+    name: "Portal Evidence",
     description: "Sistem Evaluasi PEMDI",
     path: "/evaluasi",
-    icon: ClipboardCheck,
+    icon: FolderOpen,
     color: "bg-emerald-100 text-emerald-700",
+  },
+  {
+    name: "CMS",
+    description: "Content Management System",
+    path: "/cms",
+    icon: Settings,
+    color: "bg-violet-100 text-violet-700",
   },
 ];
 
-export default function AppSwitcher() {
+export default function AppSwitcher({ onLogout }) {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
+
+  function handleLogout() {
+    setIsOpen(false);
+    onLogout?.();
+    navigate("/", { replace: true });
+  }
 
   return (
     <div className="relative">
@@ -54,8 +70,9 @@ export default function AppSwitcher() {
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="absolute right-0 top-14 z-50 w-80 rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
-            <div className="mb-4">
+          <div className="absolute right-0 top-14 z-50 w-[min(340px,calc(100vw-32px))] rounded-2xl border border-slate-200 bg-white p-5 shadow-2xl">
+
+            <div className="mb-5">
               <h3 className="text-base font-bold text-slate-900">
                 Aplikasi Pemerintah Digital
               </h3>
@@ -67,6 +84,7 @@ export default function AppSwitcher() {
             <div className="grid grid-cols-2 gap-3">
               {applications.map((app) => {
                 const Icon = app.icon;
+
                 const isActive =
                   app.path === "/"
                     ? location.pathname === "/"
@@ -101,10 +119,19 @@ export default function AppSwitcher() {
               })}
             </div>
 
-            <div className="mt-4 border-t border-slate-100 pt-3">
-              <p className="text-center text-[10px] text-slate-400">
+            <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-4">
+              <p className="text-[10px] text-slate-400">
                 Pemerintah Kota Dumai
               </p>
+
+              <button
+                type="button"
+                onClick={handleLogout}
+                className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-semibold text-red-600 transition hover:bg-red-50"
+              >
+                <LogOut size={15} />
+                Keluar
+              </button>
             </div>
           </div>
         </>

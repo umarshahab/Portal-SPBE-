@@ -1,12 +1,15 @@
 
 import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogIn } from "lucide-react";
 
 import { navigation } from "../data/portalData";
 import AppSwitcher from "./AppSwitcher";
 
-export default function Navbar() {
+export default function Navbar({
+  isAuthenticated,
+  onLogout,
+}) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const linkClass = ({ isActive }) =>
@@ -19,7 +22,8 @@ export default function Navbar() {
   return (
     <header className="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
-        {/* Logo dan identitas PEMDI */}
+
+        {/* LOGO PEMDI */}
         <Link to="/" className="flex items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-800 text-white">
             <span className="text-xl font-bold">D</span>
@@ -35,7 +39,7 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Navigasi desktop */}
+        {/* NAVIGASI DESKTOP */}
         <nav className="hidden items-center gap-8 lg:flex">
           {navigation.map((item) => (
             <NavLink
@@ -49,9 +53,19 @@ export default function Navbar() {
           ))}
         </nav>
 
-        {/* App switcher dan tombol mobile */}
+        {/* LOGIN / APP SWITCHER */}
         <div className="flex items-center gap-2">
-          <AppSwitcher />
+          {isAuthenticated ? (
+            <AppSwitcher onLogout={onLogout} />
+          ) : (
+            <Link
+              to="/login"
+              className="inline-flex items-center gap-2 rounded-xl bg-blue-700 px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:bg-blue-800"
+            >
+              <LogIn size={17} />
+              Login
+            </Link>
+          )}
 
           <button
             type="button"
@@ -65,7 +79,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Navigasi mobile */}
+      {/* NAVIGASI MOBILE */}
       {mobileOpen && (
         <div className="border-t border-slate-200 bg-white px-5 py-4 lg:hidden">
           <nav className="flex flex-col gap-4">

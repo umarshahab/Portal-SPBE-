@@ -1,4 +1,4 @@
-
+import { usePortalContent } from "../context/PortalContentContext";
 import { useMemo, useState } from "react";
 import {
   Newspaper,
@@ -12,10 +12,11 @@ import {
 
 import SectionTitle from "../components/SectionTitle";
 
-// Data berita akan dihubungkan dengan backend nantinya
-const newsData = [];
 
 export default function Informasi() {
+  const { content } = usePortalContent();
+  const newsData = content.news;
+
   const [search, setSearch] = useState("");
   const [activeCategory, setActiveCategory] = useState("Semua");
   const [selectedNews, setSelectedNews] = useState(null);
